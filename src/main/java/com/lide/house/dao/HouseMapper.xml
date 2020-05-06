@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lide.house.dao.HouseMapper">
+	
+	<resultMap type="House" id="rmp">
+		<id property="createdata" column="createdata"/>
+		<result property="name" column="name"/>
+		<result property="phone" column="phone"/>
+		<result property="typeName" column="typeName"/>
+		<result property="typePrice" column="typePrice"/>
+		<result property="showtext" column="showtext"/>
+		
+	</resultMap>
+	<select id="selectsHouse" resultMap="rmp">
+		select h.createdata,h.name,h.phone,ht.type typeName,ht.price typePrice,h.showtext from house h left join housetype ht on (h.typeid = ht.id)
+	<where>
+		<if test="leixing!=null and leixing!=''"> 
+			and ${leixing} like '%${leixingtext}%'
+		</if>
+		<if test="maxprice!=null"> 
+			and ht.price &lt;= #{maxprice}
+		</if>
+		<if test="minprice!=null"> 
+			and ht.price >= #{minprice}
+		</if>
+			<if test="maxdate!=null and maxdate !=''"> 
+			and h.createdata &lt;= #{maxdate}
+		</if>
+		<if test="mindate!=null and mindate !=''"> 
+			and h.createdata >= #{mindate}
+		</if>
+		<if test="showtext!=null and showtext!=''"> 
+			and h.showtext like '%${showtext}%'
+		</if>
+	</where>
+	
+	</select>
+
+	<insert id="addOne">
+		insert into  house values(null,#{name},#{phone},#{typeid},#{showtext},#{createdata})
+	</insert>
+	<insert id="addAll">
+		insert into  house values
+		<foreach collection="list" item="house" separator=",">
+			(null,#{house.name},#{house.phone},#{house.typeid},#{house.showtext},#{house.createdata})
+		</foreach>
+	</insert>
+</mapper>
